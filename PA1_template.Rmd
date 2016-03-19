@@ -8,6 +8,7 @@ output:
 
 ## Loading and preprocessing the data
 
+<<<<<<< HEAD
 Needed data is loaded by
 
 ```{r load_data,echo=TRUE}
@@ -42,10 +43,21 @@ Max value is
 mayor<-which.max(pasosinterv$V1)
 pasosinterv[mayor,]
 ```
+=======
+
+
+## What is mean total number of steps taken per day?
+
+
+
+## What is the average daily activity pattern?
+
+>>>>>>> 80edf39c3bb508fee88e3394542f967dd3fd3270
 
 
 ## Imputing missing values
 
+<<<<<<< HEAD
 The total of missing values in the base is given by
 ```{r NA,echo=TRUE}
 sum(complete.cases(act)==FALSE)
@@ -96,3 +108,8 @@ plot(y[wd=="weekend",mean(steps),by=interval]$V1,type="l",col="blue",
 dev.off()
 ```
 
+=======
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+>>>>>>> 80edf39c3bb508fee88e3394542f967dd3fd3270
