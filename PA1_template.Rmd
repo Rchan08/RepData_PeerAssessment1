@@ -1,0 +1,98 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+Needed data is loaded by
+
+```{r load_data,echo=TRUE}
+library(data.table)
+library(knitr)
+
+act<-read.csv("activity.csv",header = TRUE,stringsAsFactors = FALSE,na.strings = "NA")
+act$date<-as.Date(act$date,"%Y-%m-%d")
+act<-data.table(act)
+```
+
+## What is mean total number of steps taken per day?
+Means and medians are presented in the next table with the respective histogram
+
+```{r means_per_day,echo=TRUE}
+pasosdia<-act[,sum(steps),by=date]
+hist(pasosdia$V1,breaks=20,col=terrain.colors(length(unique(pasosdia$date))))
+act[,mean(steps,na.rm = TRUE),by=date]
+act[,as.double(median(steps,na.rm = TRUE)),by=date]
+```
+
+## What is the average daily activity pattern?
+The time series plot is presented in next figure
+
+```{r daily_activity,echo=TRUE}
+pasosinterv<-act[,mean(steps,na.rm = TRUE),by=interval]
+plot(pasosinterv$interval,pasosinterv$V1,type="l")
+```
+
+Max value is 
+```{r max_value,echo=TRUE}
+mayor<-which.max(pasosinterv$V1)
+pasosinterv[mayor,]
+```
+
+
+## Imputing missing values
+
+The total of missing values in the base is given by
+```{r NA,echo=TRUE}
+sum(complete.cases(act)==FALSE)
+```
+For removing the effect of missing data in the base, I decided to substitute it 
+with the respective median value
+
+```{r substitution,echo=TRUE}
+sust<-median(act$steps,na.rm = TRUE)
+y<-act
+
+for(i in 1:length(y$steps))
+if(is.na(y$steps[i])){
+  y$steps[i]<-sust
+}
+```
+
+At the same time I generate a new base with the data replaced called y.
+The histogram required and the means and medians are presented in the next block
+```{r hist,echo=TRUE}
+hist(y$steps,col="blue")
+y[,mean(steps),by=date]
+y[,median(steps),by=date]
+```
+
+The values replaced does not seem to generate a big chance in tendences.
+
+## Are there differences in activity patterns between weekdays and weekends?
+Plot required with the differences between the days is presented
+
+```{r week,echo=TRUE}
+
+for(i in 1:length(y$date)){
+  if(weekdays(y$date[i])%in%c("sábado","domingo")){
+    y$wd[i]<-"weekend"
+  }else{
+    y$wd[i]<-"weekday"
+  }
+}
+
+y$wd<-factor(y$wd)
+
+par(mfrow=c(2,1),mar=c(2,2,2,1))
+plot(y[wd=="weekday",mean(steps),by=interval]$V1,type="l",col="red",
+     main="Weekday")
+plot(y[wd=="weekend",mean(steps),by=interval]$V1,type="l",col="blue",
+     main="Weekend")
+dev.off()
+```
+
